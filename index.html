@@ -1,57 +1,122 @@
-<script>
-  const noBtn = document.getElementById("noBtn");
-  const yesBtn = document.getElementById("yesBtn");
-  const arena = document.getElementById("arena");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scam link</title>
 
-  function moveAway(event) {
-    const arenaRect = arena.getBoundingClientRect();
-    const noRect = noBtn.getBoundingClientRect();
-    const yesRect = yesBtn.getBoundingClientRect();
+  <!-- Prevent WhatsApp picking old titles -->
+  <meta property="og:title" content="Scam link">
+  <meta property="og:description" content="">
+  <meta property="og:image" content="">
 
-    const touchX = event.touches ? event.touches[0].clientX : event.clientX;
-    const touchY = event.touches ? event.touches[0].clientY : event.clientY;
-
-    let dx = (noRect.left + noRect.width / 2) - touchX;
-    let dy = (noRect.top + noRect.height / 2) - touchY;
-
-    const mag = Math.sqrt(dx * dx + dy * dy) || 1;
-    dx = (dx / mag) * 40;
-    dy = (dy / mag) * 25;
-
-    let newX = noBtn.offsetLeft + dx;
-    let newY = noBtn.offsetTop + dy;
-
-    const maxX = arena.clientWidth - noBtn.offsetWidth;
-    const maxY = arena.clientHeight - noBtn.offsetHeight;
-
-    // Keep inside arena
-    newX = Math.min(Math.max(0, newX), maxX);
-    newY = Math.min(Math.max(0, newY), maxY);
-
-    // 🚫 SAFE ZONE around YES button
-    const buffer = 20;
-    const yesZone = {
-      left: yesBtn.offsetLeft - buffer,
-      right: yesBtn.offsetLeft + yesBtn.offsetWidth + buffer,
-      top: yesBtn.offsetTop - buffer,
-      bottom: yesBtn.offsetTop + yesBtn.offsetHeight + buffer
-    };
-
-    // If No enters Yes zone, push it away
-    if (
-      newX < yesZone.right &&
-      newX + noBtn.offsetWidth > yesZone.left &&
-      newY < yesZone.bottom &&
-      newY + noBtn.offsetHeight > yesZone.top
-    ) {
-      newX = Math.random() < 0.5 ? 0 : maxX;
-      newY = Math.random() < 0.5 ? 0 : maxY;
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      overflow: hidden;
     }
 
-    noBtn.style.left = newX + "px";
-    noBtn.style.top = newY + "px";
-  }
+    h1 {
+      font-size: 42px;
+      text-align: center;
+      margin-bottom: 40px;
+      color: #333;
+      padding: 0 10px;
+    }
 
-  noBtn.addEventListener("mouseover", moveAway);
-  noBtn.addEventListener("touchstart", moveAway);
-</script>
+    .arena {
+      position: relative;
+      width: 320px;
+      height: 140px;
+    }
+
+    button {
+      font-size: 22px;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      position: absolute;
+      transition: left 0.15s ease, top 0.15s ease;
+    }
+
+    #yesBtn {
+      background-color: #ff4d6d;
+      color: white;
+      left: 20px;
+      top: 50px;
+      z-index: 10; /* ALWAYS ON TOP */
+    }
+
+    #noBtn {
+      background-color: #adb5bd;
+      color: white;
+      left: 180px;
+      top: 50px;
+      z-index: 1; /* ALWAYS BELOW YES */
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Acchku can I take you out on a dinner date? 🍽️❤️</h1>
+
+  <div class="arena" id="arena">
+    <button id="yesBtn" onclick="sayYes()">Yes 🥰</button>
+    <button id="noBtn">No 🙄</button>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const arena = document.getElementById("arena");
+
+    function moveAway(event) {
+      const noRect = noBtn.getBoundingClientRect();
+
+      const touchX = event.touches ? event.touches[0].clientX : event.clientX;
+      const touchY = event.touches ? event.touches[0].clientY : event.clientY;
+
+      let dx = (noRect.left + noRect.width / 2) - touchX;
+      let dy = (noRect.top + noRect.height / 2) - touchY;
+
+      const mag = Math.sqrt(dx * dx + dy * dy) || 1;
+      dx = (dx / mag) * 40;
+      dy = (dy / mag) * 25;
+
+      let newX = noBtn.offsetLeft + dx;
+      let newY = noBtn.offsetTop + dy;
+
+      const maxX = arena.clientWidth - noBtn.offsetWidth;
+      const maxY = arena.clientHeight - noBtn.offsetHeight;
+
+      newX = Math.min(Math.max(0, newX), maxX);
+      newY = Math.min(Math.max(0, newY), maxY);
+
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
+    }
+
+    noBtn.addEventListener("mouseover", moveAway);
+    noBtn.addEventListener("touchstart", moveAway);
+
+    function sayYes() {
+      document.body.innerHTML = `
+        <h1 style="font-size:48px; color:#ff4d6d; text-align:center;">
+          💥 YESSSS 🤯❤️
+        </h1>
+        <img
+          src="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
+          style="width:320px; margin-top:20px;"
+        />
+      `;
+    }
+  </script>
+
+</body>
+</html>
