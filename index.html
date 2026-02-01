@@ -28,10 +28,11 @@
       padding: 0 10px;
     }
 
+    /* Bigger arena so No has space to run */
     .arena {
       position: relative;
-      width: 380px;
-      height: 160px;
+      width: 420px;
+      height: 180px;
     }
 
     button {
@@ -41,33 +42,33 @@
       border-radius: 30px;
       cursor: pointer;
       position: absolute;
-      transition: left 0.15s ease, top 0.15s ease;
+      transition: left 0.18s ease, top 0.18s ease;
     }
 
+    /* YES is fixed on the left */
     #yesBtn {
       background-color: #ff4d6d;
       color: white;
       left: 20px;
-      top: 60px;
+      top: 70px;
     }
 
+    /* NO lives only on the right */
     #noBtn {
       background-color: #adb5bd;
       color: white;
-      left: 240px;
-      top: 60px;
+      left: 270px;
+      top: 70px;
     }
 
-    /* Text near NO */
+    /* Tamil sass text */
     #noText {
       position: absolute;
       font-size: 14px;
       color: #555;
-      left: 240px;
-      top: 100px;
-      pointer-events: none; /* so it doesn't block clicks */
-      transition: left 0.15s ease, top 0.15s ease;
+      pointer-events: none;
       white-space: nowrap;
+      transition: left 0.18s ease, top 0.18s ease;
     }
   </style>
 </head>
@@ -93,28 +94,31 @@
       const touchX = event.touches ? event.touches[0].clientX : event.clientX;
       const touchY = event.touches ? event.touches[0].clientY : event.clientY;
 
+      // Vector away from finger
       let dx = (noRect.left + noRect.width / 2) - touchX;
       let dy = (noRect.top + noRect.height / 2) - touchY;
 
       const mag = Math.sqrt(dx * dx + dy * dy) || 1;
-      dx = (dx / mag) * 40;
-      dy = (dy / mag) * 25;
+
+      /* 🔥 Bigger escape distance */
+      dx = (dx / mag) * 65;
+      dy = (dy / mag) * 40;
 
       let newX = noBtn.offsetLeft + dx;
       let newY = noBtn.offsetTop + dy;
 
-      /* NO is restricted to RIGHT side only */
-      const minX = arena.clientWidth / 2;
-      const maxX = arena.clientWidth - noBtn.offsetWidth;
-      const maxY = arena.clientHeight - noBtn.offsetHeight;
+      /* 🚫 Restrict No to RIGHT HALF only */
+      const minX = arena.clientWidth / 2 + 10;
+      const maxX = arena.clientWidth - noBtn.offsetWidth - 10;
+      const maxY = arena.clientHeight - noBtn.offsetHeight - 10;
 
       newX = Math.min(Math.max(minX, newX), maxX);
-      newY = Math.min(Math.max(0, newY), maxY);
+      newY = Math.min(Math.max(10, newY), maxY);
 
       noBtn.style.left = newX + "px";
       noBtn.style.top = newY + "px";
 
-      /* Move the text along with NO */
+      /* Text follows No */
       noText.style.left = newX + "px";
       noText.style.top = (newY + 42) + "px";
     }
