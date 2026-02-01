@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Scam link</title>
 
-  <!-- Prevent WhatsApp picking old titles -->
   <meta property="og:title" content="Scam link">
   <meta property="og:description" content="">
   <meta property="og:image" content="">
@@ -31,8 +30,8 @@
 
     .arena {
       position: relative;
-      width: 320px;
-      height: 140px;
+      width: 380px;
+      height: 160px;
     }
 
     button {
@@ -49,16 +48,26 @@
       background-color: #ff4d6d;
       color: white;
       left: 20px;
-      top: 50px;
-      z-index: 10; /* ALWAYS ON TOP */
+      top: 60px;
     }
 
     #noBtn {
       background-color: #adb5bd;
       color: white;
-      left: 180px;
-      top: 50px;
-      z-index: 1; /* ALWAYS BELOW YES */
+      left: 240px;
+      top: 60px;
+    }
+
+    /* Text near NO */
+    #noText {
+      position: absolute;
+      font-size: 14px;
+      color: #555;
+      left: 240px;
+      top: 100px;
+      pointer-events: none; /* so it doesn't block clicks */
+      transition: left 0.15s ease, top 0.15s ease;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -70,10 +79,12 @@
   <div class="arena" id="arena">
     <button id="yesBtn" onclick="sayYes()">Yes 🥰</button>
     <button id="noBtn">No 🙄</button>
+    <div id="noText">Idhellam nadakkaadhu 😏</div>
   </div>
 
   <script>
     const noBtn = document.getElementById("noBtn");
+    const noText = document.getElementById("noText");
     const arena = document.getElementById("arena");
 
     function moveAway(event) {
@@ -92,14 +103,20 @@
       let newX = noBtn.offsetLeft + dx;
       let newY = noBtn.offsetTop + dy;
 
+      /* NO is restricted to RIGHT side only */
+      const minX = arena.clientWidth / 2;
       const maxX = arena.clientWidth - noBtn.offsetWidth;
       const maxY = arena.clientHeight - noBtn.offsetHeight;
 
-      newX = Math.min(Math.max(0, newX), maxX);
+      newX = Math.min(Math.max(minX, newX), maxX);
       newY = Math.min(Math.max(0, newY), maxY);
 
       noBtn.style.left = newX + "px";
       noBtn.style.top = newY + "px";
+
+      /* Move the text along with NO */
+      noText.style.left = newX + "px";
+      noText.style.top = (newY + 42) + "px";
     }
 
     noBtn.addEventListener("mouseover", moveAway);
