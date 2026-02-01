@@ -10,6 +10,7 @@
 
   <style>
     body {
+      margin: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -28,11 +29,10 @@
       padding: 0 10px;
     }
 
-    /* Bigger arena so No has space to run */
     .arena {
       position: relative;
-      width: 420px;
-      height: 180px;
+      width: 100vw;
+      height: 300px;
     }
 
     button {
@@ -45,23 +45,21 @@
       transition: left 0.18s ease, top 0.18s ease;
     }
 
-    /* YES is fixed on the left */
     #yesBtn {
       background-color: #ff4d6d;
       color: white;
-      left: 20px;
-      top: 70px;
+      left: 50%;
+      top: 120px;
+      transform: translateX(-50%);
     }
 
-    /* NO lives only on the right */
     #noBtn {
       background-color: #adb5bd;
       color: white;
-      left: 270px;
-      top: 70px;
+      left: 70%;
+      top: 120px;
     }
 
-    /* Tamil sass text */
     #noText {
       position: absolute;
       font-size: 14px;
@@ -86,39 +84,65 @@
   <script>
     const noBtn = document.getElementById("noBtn");
     const noText = document.getElementById("noText");
+    const yesBtn = document.getElementById("yesBtn");
     const arena = document.getElementById("arena");
 
+    function overlapsYes(x, y) {
+      const yesRect = yesBtn.getBoundingClientRect();
+      const noWidth = noBtn.offsetWidth;
+      const noHeight = noBtn.offsetHeight;
+
+      const noRect = {
+        left: x,
+        right: x + noWidth,
+        top: y,
+        bottom: y + noHeight
+      };
+
+      return !(
+        noRect.right < yesRect.left ||
+        noRect.left > yesRect.right ||
+        noRect.bottom < yesRect.top ||
+        noRect.top > yesRect.bottom
+      );
+    }
+
     function moveAway(event) {
+      const arenaRect = arena.getBoundingClientRect();
       const noRect = noBtn.getBoundingClientRect();
 
       const touchX = event.touches ? event.touches[0].clientX : event.clientX;
       const touchY = event.touches ? event.touches[0].clientY : event.clientY;
 
-      // Vector away from finger
       let dx = (noRect.left + noRect.width / 2) - touchX;
       let dy = (noRect.top + noRect.height / 2) - touchY;
 
       const mag = Math.sqrt(dx * dx + dy * dy) || 1;
 
-      /* 🔥 Bigger escape distance */
-      dx = (dx / mag) * 65;
-      dy = (dy / mag) * 40;
+      // 🔥 BIGGER escape distance
+      dx = (dx / mag) * 120;
+      dy = (dy / mag) * 80;
 
       let newX = noBtn.offsetLeft + dx;
       let newY = noBtn.offsetTop + dy;
 
-      /* 🚫 Restrict No to RIGHT HALF only */
-      const minX = arena.clientWidth / 2 + 10;
-      const maxX = arena.clientWidth - noBtn.offsetWidth - 10;
-      const maxY = arena.clientHeight - noBtn.offsetHeight - 10;
+      const maxX = arena.clientWidth - noBtn.offsetWidth;
+      const maxY = arena.clientHeight - noBtn.offsetHeight;
 
-      newX = Math.min(Math.max(minX, newX), maxX);
-      newY = Math.min(Math.max(10, newY), maxY);
+      newX = Math.min(Math.max(10, newX), maxX - 10);
+      newY = Math.min(Math.max(10, newY), maxY - 10);
+
+      // 🚫 If landing on YES, reroll position
+      let attempts = 0;
+      while (overlapsYes(newX, newY) && attempts < 10) {
+        newX = Math.random() * maxX;
+        newY = Math.random() * maxY;
+        attempts++;
+      }
 
       noBtn.style.left = newX + "px";
       noBtn.style.top = newY + "px";
 
-      /* Text follows No */
       noText.style.left = newX + "px";
       noText.style.top = (newY + 42) + "px";
     }
